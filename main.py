@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import date
 import random
+from urllib.parse import unquote
 
 app = FastAPI()
 
@@ -44,7 +45,9 @@ def get_today_test():
 # ランダムに3問の問題を取得
 @app.get("/get_questions/{category}")
 def get_questions(category: str):
-    filtered_questions = [q for q in questions if q["category"] == category]
+    # URLエンコードされたカテゴリをデコード
+    decoded_category = unquote(category)
+    filtered_questions = [q for q in questions if q["category"] == decoded_category]
     if not filtered_questions:
         return {"error": "No questions found for this category."}
     return random.sample(filtered_questions, 3)
